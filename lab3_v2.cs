@@ -7,58 +7,49 @@ using System.Threading.Tasks;
 
 namespace lab3
 {
-    internal class Program
+    internal class Program2
     {
-        static double ParsingVar(string varName)
-        {
-            string buffer = "";
-            double inputNum = 12;
 
-            return inputNum;
-        }
         static void Main(string[] args)
         {
-            //int n = 40;
-            double a = Math.Round(Math.PI/5, 4);
-            double b = 9*a;
-            double step = (b-a) / 10;
-            double e = 0.0001;
-            int count = 1;
+            double a = Math.PI / 5;     // левая граница
+            double b = 9 * a;           // левая граница
+            double step = (b - a) / 10; // шаг
+            double e = 0.0001;          // заданная точность 
+            int pointNumber = 1;        // номер точки
 
-            Console.WriteLine($"a={a}");
-            Console.WriteLine($"b={b}");
-            Console.WriteLine($"step={step}");
-            //for (double x = a; x <= b; x += step)
-            //{
-            //    Console.WriteLine(x);
-            //}
+            Console.WriteLine($"a = {Math.Round(a, 4)}\n");
+            Console.WriteLine($"b = {Math.Round(b, 4)}\n");
+            Console.WriteLine($"step = {Math.Round(step, 4)}\n");
 
-            for (double x = a; x <= b; x += step)
+            for (double x = a; x <= b; x += step)   // перебор параметра Х
             {
-                // Y
-                double y = -Math.Log(Math.Abs(2 * Math.Sin(x / 2)));
+                if (pointNumber > 10)
+                    break;
 
-                //SN
+                // Y - значение функции
+                double y = -1 * Math.Log(Math.Abs(2 * Math.Sin(x / 2)));
+
+                // SN - сумма для заданного N 
                 double sn = 0;
                 for (int n = 1; n <= 40; n++)
                     sn += Math.Cos(n * x) / n;
-                // SE
-                double se = 0;
-                double An = 1;
-                int n2 = 1;
+
+                // SE - сумма для заданной точности
+                double se = 0, n2 = 1;
+                double An = Math.Cos(n2 * x) / n2;  // первое слагаемое
                 while (Math.Abs(An) > e)
                 {
-                    An = Math.Cos(n2 * x) / n2;
                     se += An;
                     n2++;
+                    An = Math.Cos(n2 * x) / n2;
                 }
 
-
-                Console.WriteLine($"{count}) x={Math.Round(x, 4)} sn={Math.Round(sn, 4)} se={Math.Round(se, 4)} y={Math.Round(y, 4)}\n");
-                count++;
+                Console.WriteLine($"{pointNumber}) x = {Math.Round(x, 4)} | sn = {Math.Round(sn, 4)} | se = {Math.Round(se, 4)} | y = {Math.Round(y, 4)}\n");
+                pointNumber++;
             }
-
-            Console.ReadKey();
+            
+            Console.ReadLine();
         }
     }
 }
