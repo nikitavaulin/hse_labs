@@ -13,14 +13,14 @@ namespace lab3
         static void Main(string[] args)
         {
             double a = Math.PI / 5;     // левая граница
-            double b = 9 * a;           // левая граница
+            double b = 9 * a;           // правая граница
             double step = (b - a) / 10; // шаг
             double e = 0.0001;          // заданная точность 
             int pointNumber = 1;        // номер точки
 
-            Console.WriteLine($"a = {Math.Round(a, 4)}\n");
-            Console.WriteLine($"b = {Math.Round(b, 4)}\n");
-            Console.WriteLine($"step = {Math.Round(step, 4)}\n");
+            Console.WriteLine($"a = {a:F4}\n");
+            Console.WriteLine($"b = {b:F4}\n");
+            Console.WriteLine($"step = {step:F4}\n");
 
             for (double x = a; x <= b; x += step)   // перебор параметра Х
             {
@@ -32,7 +32,7 @@ namespace lab3
 
                 // SN - сумма для заданного N 
                 double sn = 0;
-                for (int n = 1; n <= 400; n++)      // в задании n = 40, но количество итераций должно быть как можно больше, чтобы число было ближе к Y
+                for (int n = 1; n <= 400; n++) // в задании n = 40, но количество итераций должно быть как можно больше, чтобы число было ближе к Y
                     sn += Math.Cos(n * x) / n;
 
                 // SE - сумма для заданной точности
@@ -45,11 +45,11 @@ namespace lab3
                     An = Math.Cos(n2 * x) / n2;
                 }
 
-                Console.WriteLine($"{pointNumber}) x = {Math.Round(x, 4)} | sn = {Math.Round(sn, 4)} | se = {Math.Round(se, 4)} | y = {Math.Round(y, 4)}\n");
+                Console.WriteLine($"{pointNumber}) x = {x:F4} | sn = {sn:F4} | se = {se:F4} | y = {y:F4}\n");
                 pointNumber++;
             }
-            
+
             Console.ReadLine();
-        }
+        } 
     }
 }
