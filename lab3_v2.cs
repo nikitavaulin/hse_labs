@@ -22,7 +22,7 @@ namespace lab3
             Console.WriteLine($"b = {b:F4}\n");
             Console.WriteLine($"step = {step:F4}\n");
 
-            for (double x = a; x <= b; x += step)   // перебор параметра Х
+            for (double x = a; x <= b; x += step)   // перебор значения Х
             {
                 if (pointNumber > 10)
                     break;
@@ -32,7 +32,8 @@ namespace lab3
 
                 // SN - сумма для заданного N 
                 double sn = 0;
-                for (int n = 1; n <= 400; n++) // в задании n = 40, но количество итераций должно быть как можно больше, чтобы число было ближе к Y
+                // в задании n = 40, но количество итераций должно быть как можно больше, чтобы число было ближе к Y
+                for (int n = 1; n <= 400; n++) 
                     sn += Math.Cos(n * x) / n;
 
                 // SE - сумма для заданной точности
