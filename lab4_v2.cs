@@ -98,7 +98,7 @@ namespace lab1
         {
             for (int i = 0; i < array.Length; i++)
             {
-                array[i] = ParsingVar($"Элемент массива №{i + 1}", $"Введите {i + 1} элемент массива");
+                array[i] = ParsingVar($"elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
             }
             return array;
         }
@@ -114,6 +114,7 @@ namespace lab1
             Console.Write("\n");
         }
 
+        // выбор с каким массивом дальше работать
         static int[] ChooseArray(int[] array, int[] arrayNew)
         {
             Console.WriteLine("\nС каким массивом продолжить работу?");
@@ -124,7 +125,7 @@ namespace lab1
             switch (mode)
             {
                 case 1:
-                    Console.WriteLine("Вы выбрали новый массив");
+                    Console.WriteLine("Вы выбрали предыдущий массив");
                     OutputArray(array);
                     break;
                 case 2:
@@ -134,6 +135,43 @@ namespace lab1
                     break;
             }
             return array;
+        }
+
+        static int[] AddArrayRandom(int[] array, int addCount)
+        {
+            int[] newArray = new int[array.Length + addCount];
+            Random rand = new Random();
+
+            for (int i = 0; i < newArray.Length; i++)
+            {
+                if (i < array.Length)
+                {
+                    newArray[i] = array[i];
+                }
+                else
+                {
+                    newArray[i] = rand.Next();
+                }
+            }
+            return newArray;
+        }
+
+        static int[] AddArray(int[] array, int addCount)
+        {
+            int[] newArray = new int[array.Length + addCount];
+
+            for (int i = 0; i < newArray.Length; i++)
+            {
+                if (i < array.Length)
+                {
+                    newArray[i] = array[i];
+                }
+                else
+                {
+                    newArray[i] = ParsingVar("elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
+                }
+            }
+            return newArray;
         }
 
         static void Main(string[] args)
@@ -150,7 +188,8 @@ namespace lab1
                 Console.WriteLine("\nПожалуйста, выберите действите:");
                 Console.WriteLine("1. Сформировать массив");
                 Console.WriteLine("2. Вывести массив на печать");
-                Console.WriteLine("3. Удалить из массива минимальный элемент (задание 1)\n");
+                Console.WriteLine("3. Удалить из массива минимальный элемент (задание 1)");
+                Console.WriteLine("4. Добавить в массив новые элементы (задание 2)\n");
                 Console.WriteLine("0. Завершить работу программы\n");
 
                 // выбор пользователем действия
@@ -220,12 +259,12 @@ namespace lab1
                         // формирование нового массива без удаленных элементов
                         int[] arrayTask1 = new int[array.Length - countMin];
                         int j = 0;
-                       
+
                         for (int i = 0; i < array.Length; i++)
                         {
                             if (array[i] != mMin)
                             {
-                                arrayTask1[j] = array[i]; 
+                                arrayTask1[j] = array[i];
                                 j++;
                             }
                         }
@@ -237,7 +276,36 @@ namespace lab1
                         break;
 
                     case 4: //  Второе задание (добавление элементов в массив)
-                        int addCount = ParsingVar("k", "Сколько элементов вы хотите добавить в массив? Введите, пожалуйста, целое число.");
+                        if (!isArrayCreated)
+                        {
+                            Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+
+                        int addCount = ParsingVar("arrayLength", "Сколько элементов вы хотите добавить в массив? Введите, пожалуйста, целое число.");
+                        int[] arrayTask2 = new int[array.Length + addCount];
+
+                        Console.WriteLine("Как вы хотите добавить новые элементы массива? \n");
+                        Console.WriteLine("1. Задать новые элементы массива случайно");
+                        Console.WriteLine("2. Задать новые элементы массива вручную\n");
+
+                        mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
+
+                        switch (mode)
+                        {
+                            case 1: // случайные числа
+                                arrayTask2 = AddArrayRandom(array, addCount);
+                                break;
+                            case 2:
+                                arrayTask2 = AddArray(array, addCount);
+                                break;
+                        }
+                        Console.Write("Теперь ");
+                        OutputArray(array);
+                        isArrayCreated = true;
+
+                        // пользователь выбирает с каким массивом продолжить работу
+                        array = ChooseArray(array, arrayTask2); 
 
                         break;
 
