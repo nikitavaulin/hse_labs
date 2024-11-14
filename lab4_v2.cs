@@ -10,29 +10,6 @@ namespace lab1
 {
     internal class lab4
     {
-        /*static int ParsingVar2(string varName)
-        {
-            string buffer = "";
-            bool isParse = false;
-            int outputValue;
-
-            do
-            {
-                Console.WriteLine($"Введите, пожалуйста, значение {varName}\n");
-                buffer = Console.ReadLine();
-
-                isParse = int.TryParse(buffer, out outputValue);
-
-                if (!isParse)
-                {
-                    Console.WriteLine($"Вы ввели {varName} неверно. Повторите, пожалуйста, ввод.\n");
-                }
-            } while (!isParse);
-
-            Console.WriteLine($"Вы ввели {varName} = {outputValue}");
-            return outputValue;
-        }*/
-
         static bool InBound(int value, int downBound = -2147483647, int upBound = 2147483647)
         {
             return downBound <= value && value <= upBound;
@@ -44,7 +21,7 @@ namespace lab1
             string buffer = "";
             bool isParse = false;
             int outputValue = 0;
-            
+
             do
             {
                 try
@@ -52,7 +29,7 @@ namespace lab1
                     Console.WriteLine(outputText);
                     outputValue = Convert.ToInt32(Console.ReadLine());
                     isParse = true;
-                    
+
                     switch (varName)
                     {
                         case "arrayLength":
@@ -75,7 +52,7 @@ namespace lab1
                             isParse = InBound(outputValue, 1, 2);
                             if (!isParse)
                             {
-                                Console.WriteLine($"Введите целое число от 0 до 10. Повторите, пожалуйста, ввод.\n");
+                                Console.WriteLine($"Введите целое число от 1 до 2. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
 
@@ -99,7 +76,7 @@ namespace lab1
                     Console.WriteLine("Возникла непредвиденная ошибка, повторите, пожалуйста, ввод");
                     isParse = false;
                 }
-            }while (!isParse);
+            } while (!isParse);
 
             //Console.WriteLine($"Вы ввели {varName} = {outputValue}");
             return outputValue;
@@ -107,7 +84,7 @@ namespace lab1
 
         // формирование массива случайных чисел
         static int[] GetRandomArray(int[] array)
-        {   
+        {
             Random rand = new Random();
             for (int i = 0; i < array.Length; i++)
             {
@@ -127,16 +104,37 @@ namespace lab1
         }
 
         // вывод массива
-        static void OutputArray(int[] array) 
+        static void OutputArray(int[] array)
         {
             Console.Write($"Ваш массив: ");
             foreach (int elem in array)
             {
                 Console.Write($"{elem} ");
-            }   
+            }
             Console.Write("\n");
         }
 
+        static int[] ChooseArray(int[] array, int[] arrayNew)
+        {
+            Console.WriteLine("\nС каким массивом продолжить работу?");
+            Console.WriteLine("1. Продолжить работу с предыдущим массивом");
+            Console.WriteLine("2. Продолжить работу с текущим массивом\n");
+
+            int mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
+            switch (mode)
+            {
+                case 1:
+                    Console.WriteLine("Вы выбрали новый массив");
+                    OutputArray(array);
+                    break;
+                case 2:
+                    array = arrayNew;
+                    Console.WriteLine("Вы выбрали новый массив");
+                    OutputArray(array);
+                    break;
+            }
+            return array;
+        }
 
         static void Main(string[] args)
         {
@@ -192,7 +190,7 @@ namespace lab1
                         OutputArray(array);
                         break;
 
-                    case 3: //  Первое задание
+                    case 3: //  Первое задание (удаление элементов из массива)
                         if (!isArrayCreated)
                         {
                             Console.WriteLine("Массив не сформирован");
@@ -201,7 +199,8 @@ namespace lab1
 
                         int mMin = array[0];
                         int countMin = 0;
-                        
+
+                        // поиск минимума
                         for (int i = 0; i < array.Length; i++)
                         {
                             if (array[i] < mMin)
@@ -209,6 +208,7 @@ namespace lab1
                                 mMin = array[i];
                             }
                         }
+                        // подсчёт количества минимальных элементов
                         for (int i = 0; i < array.Length; i++)
                         {
                             if (array[i] == mMin)
@@ -217,36 +217,28 @@ namespace lab1
                             }
                         }
 
+                        // формирование нового массива без удаленных элементов
                         int[] arrayTask1 = new int[array.Length - countMin];
                         int j = 0;
-
-                        for (int i = 0; i < array.Length - 1; i++)
+                       
+                        for (int i = 0; i < array.Length; i++)
                         {
                             if (array[i] != mMin)
                             {
-                                arrayTask1[j] = array[i];
+                                arrayTask1[j] = array[i]; 
                                 j++;
                             }
                         }
                         Console.Write("Теперь ");
-                        OutputArray(arrayTask1);
+                        OutputArray(arrayTask1); // вывод массива
 
-                        Console.WriteLine("\nС каким массивом продолжить работу?");
-                        Console.WriteLine("1. Продолжить работу с первым массивом");
-                        Console.WriteLine("2. Продолжить работу с новым массивом\n");
-
-                        mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
-                        if (mode == 2)
-                        {
-                            array = arrayTask1;
-                            Console.WriteLine("Вы выбрали новый массив");
-                            break;
-                        }
-                        Console.WriteLine("Вы выбрали старый массив");
+                        array = ChooseArray(array, arrayTask1); // пользователь выбирает с каким массивом продолжить работу
 
                         break;
 
-                    case 4: //  Второе задание
+                    case 4: //  Второе задание (добавление элементов в массив)
+                        int addCount = ParsingVar("k", "Сколько элементов вы хотите добавить в массив? Введите, пожалуйста, целое число.");
+
                         break;
 
                     case 5: //  Третье задание
@@ -260,7 +252,7 @@ namespace lab1
                 }
             } while (isRunProgram);
 
-            
+
             Console.ReadLine();
         }
     }
