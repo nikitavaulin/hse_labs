@@ -189,7 +189,9 @@ namespace lab1
                 Console.WriteLine("1. Сформировать массив");
                 Console.WriteLine("2. Вывести массив на печать");
                 Console.WriteLine("3. Удалить из массива минимальный элемент (задание 1)");
-                Console.WriteLine("4. Добавить в массив новые элементы (задание 2)\n");
+                Console.WriteLine("4. Добавить в массив новые элементы (задание 2)");
+                Console.WriteLine("5. Циклический сдвиг (задание 3)");
+                Console.WriteLine("6. Найти первый отрицательный элемент в массиве (задание 4)");
                 Console.WriteLine("0. Завершить работу программы\n");
 
                 // выбор пользователем действия
@@ -305,11 +307,25 @@ namespace lab1
                         isArrayCreated = true;
 
                         // пользователь выбирает с каким массивом продолжить работу
-                        array = ChooseArray(array, arrayTask2); 
+                        array = ChooseArray(array, arrayTask2);
 
                         break;
 
                     case 5: //  Третье задание
+                        break;
+
+                    case 6: //
+                        int countCompare = 0;
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            if (array[i] < 0)
+                            {
+                                countCompare++;
+                                Console.WriteLine($"Первый отрицательный элемент в массиве = {array[i]}");
+                                break;
+                            }
+                        }
+                        Console.WriteLine($"Количество сравнений, необходимо для поиска = {countCompare}\n");
                         break;
 
                     case 0:
