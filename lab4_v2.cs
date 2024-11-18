@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -10,13 +11,19 @@ namespace lab1
 {
     internal class lab4
     {
+        // проверка принадлежит ли области допустимых значений
         static bool InBound(int value, int downBound = -2147483647, int upBound = 2147483647)
         {
             return downBound <= value && value <= upBound;
         }
 
-
-        static int ParsingVar(string varName, string outputText)
+        /// <summary>
+        /// Метод считывания переменных, введённых пользователем
+        /// </summary>
+        /// <param name="varClass">Класс переменной, для определения её допустимых значений</param>
+        /// <param name="outputText">Текст для вывода в консоль</param>
+        /// <returns>Значение переменной с типом Int32</returns>
+        static int ParsingIntVar(string varClass, string outputText)
         {
             string buffer = "";
             bool isParse = false;
@@ -30,21 +37,21 @@ namespace lab1
                     outputValue = Convert.ToInt32(Console.ReadLine());
                     isParse = true;
 
-                    switch (varName)
+                    switch (varClass)
                     {
                         case "arrayLength":
-                            isParse = InBound(outputValue, 1, 2147483647);
+                            isParse = InBound(outputValue, 1);
                             if (!isParse)
                             {
-                                Console.WriteLine($"Длина массива должна быть больше 0. Повторите, пожалуйста, ввод.\n");
+                                Console.WriteLine($"Длина массива должна быть больше 0, в пределах Int32. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
 
                         case "answer":
-                            isParse = InBound(outputValue, 0, 10);
+                            isParse = InBound(outputValue, 0, 8);
                             if (!isParse)
                             {
-                                Console.WriteLine($"Введите целое число от 0 до 10. Повторите, пожалуйста, ввод.\n"); // FIXME
+                                Console.WriteLine($"Введите целое число от 0 до 8. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
 
@@ -56,11 +63,19 @@ namespace lab1
                             }
                             break;
 
-                        default:
+                        case "stepShiftRight":
+                            isParse = InBound(outputValue, 0);
+                            if (!isParse)
+                            {
+                                Console.WriteLine($"Введите целое положительное число в пределах Int32. Повторите, пожалуйста, ввод.\n");
+                            }
+                            break;
+
+                        case "elem":
                             isParse = InBound(outputValue);
                             if (!isParse)
                             {
-                                Console.WriteLine($"Длина массива должна быть больше 0. Повторите, пожалуйста, ввод.\n");
+                                Console.WriteLine($"Элемент массива должен быть числом в пределах Int32. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
                     }
@@ -70,7 +85,11 @@ namespace lab1
                     Console.WriteLine($"Вы ввели не целое число. Повторите, пожалуйста, ввод.\n");
                     isParse = false;
                 }
-
+                catch (OverflowException)
+                {
+                    Console.WriteLine($"Вы ввели число не в пределах Int32. Повторите, пожалуйста, ввод.\n");
+                    isParse = false;
+                }
                 catch
                 {
                     Console.WriteLine("Возникла непредвиденная ошибка, повторите, пожалуйста, ввод");
@@ -78,7 +97,6 @@ namespace lab1
                 }
             } while (!isParse);
 
-            //Console.WriteLine($"Вы ввели {varName} = {outputValue}");
             return outputValue;
         }
 
@@ -98,7 +116,7 @@ namespace lab1
         {
             for (int i = 0; i < array.Length; i++)
             {
-                array[i] = ParsingVar($"elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
+                array[i] = ParsingIntVar($"elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
             }
             return array;
         }
@@ -114,14 +132,14 @@ namespace lab1
             Console.Write("\n");
         }
 
-        // выбор с каким массивом дальше работать
+        // выбор с каким массивом продолжать работать
         static int[] ChooseArray(int[] array, int[] arrayNew)
         {
             Console.WriteLine("\nС каким массивом продолжить работу?");
             Console.WriteLine("1. Продолжить работу с предыдущим массивом");
             Console.WriteLine("2. Продолжить работу с текущим массивом\n");
 
-            int mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
+            int mode = ParsingIntVar("mode", "Введите, пожалуйста, номер режима");
             switch (mode)
             {
                 case 1:
@@ -137,6 +155,7 @@ namespace lab1
             return array;
         }
 
+        // добавление случайных элементов в массив
         static int[] AddArrayRandom(int[] array, int addCount)
         {
             int[] newArray = new int[array.Length + addCount];
@@ -156,6 +175,7 @@ namespace lab1
             return newArray;
         }
 
+        // добавление заданных элементов в массив
         static int[] AddArray(int[] array, int addCount)
         {
             int[] newArray = new int[array.Length + addCount];
@@ -168,35 +188,107 @@ namespace lab1
                 }
                 else
                 {
-                    newArray[i] = ParsingVar("elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
+                    newArray[i] = ParsingIntVar("elem", $"Введите, пожалуйста, #{i + 1} элемент массива");
                 }
             }
             return newArray;
         }
 
+        // Копирование одного массива в другой
+        static int[] CopyArray(int[] array, int[] arrayNew)
+        {
+            for (int i = 0; i < arrayNew.Length; i++)
+            {
+                arrayNew[i] = array[i];
+            }
+            return arrayNew;
+        }
+
+        // бинарный поиск элемента в массиве
+        static int SearchBinary(int[] array, int element)
+        {
+            int low = 0;
+            int high = array.Length - 1;
+            //bool isElementFound = false;
+
+            while (low <= high)
+            {
+                int mid = (low + high) / 2;
+                if (array[mid] == element)
+                {
+                    //Console.Write($"Элемент {element} есть в массиве, его порядковый номер в отсортированом массиве = {mid + 1}\n");
+                    //isElementFound = true;
+                    return mid + 1;
+                }
+                if (array[mid] < element)
+                {
+                    low = mid + 1;
+                }
+                else
+                {
+                    high = mid - 1;
+                }
+            }
+            return -1;
+        }
+
+        // сортировка выбором массива
+        static int[] SortSelection(int[] array)
+        {
+            // сортировка выбором
+            for (int position = 0; position < array.Length - 1; position++)
+            {
+                for (int i = position + 1; i < array.Length; i++)
+                {
+                    if (array[i] < array[position])
+                    {
+                        (array[position], array[i]) = (array[i], array[position]);
+                    }
+                }
+            }
+            return array;
+        }
+
+        // сдвиг массива вправо
+        static int[] ShiftArrayRight(int[] array)
+        {
+            return array;
+        }
+
+        // проверка пустой ли массив
+        static bool isArrayFull(int[] array)
+        {
+            return array.Length > 0;
+        }
+        
         static void Main(string[] args)
         {
             // инициализация переменных
             int answer = -1; // выбор пользователя
             bool isArrayCreated = false; // создан ли массив
             bool isRunProgram = true; // работает ли программа
+            bool isArraySorted = false; // отсортирован ли массив
             int[] array = new int[1]; // создание массива
 
             // основной алгоритм
             do
             {
+                // МЕНЮ
+                #region menu
                 Console.WriteLine("\nПожалуйста, выберите действите:");
                 Console.WriteLine("1. Сформировать массив");
                 Console.WriteLine("2. Вывести массив на печать");
                 Console.WriteLine("3. Удалить из массива минимальный элемент (задание 1)");
                 Console.WriteLine("4. Добавить в массив новые элементы (задание 2)");
-                Console.WriteLine("5. Циклический сдвиг (задание 3)");
+                Console.WriteLine("5. Сдвинуть циклически массив вправо (задание 3)");
                 Console.WriteLine("6. Найти первый отрицательный элемент в массиве (задание 4)");
+                Console.WriteLine("7. Отсортировать массив по возрастанию (задание 5)");
+                Console.WriteLine("8. Найти элемент в массиве (задание 6)");
                 Console.WriteLine("0. Завершить работу программы\n");
-
+                
                 // выбор пользователем действия
-                answer = ParsingVar("answer", "Введите номер действия\n");
-
+                answer = ParsingIntVar("answer", "Введите номер действия\n");
+                #endregion
                 switch (answer)
                 {
                     case 1: // сформировать массив
@@ -204,8 +296,8 @@ namespace lab1
                         Console.WriteLine("1. Сформировать элементы массива случайно");
                         Console.WriteLine("2. Сформировать элементы массива вручную\n");
 
-                        int mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
-                        int arrayLength = ParsingVar("arrayLength", "\nВведите, пожалуйста, длину массива");
+                        int mode = ParsingIntVar("mode", "Введите, пожалуйста, номер режима");
+                        int arrayLength = ParsingIntVar("arrayLength", "\nВведите, пожалуйста, длину массива");
 
                         Array.Resize(ref array, arrayLength);   // FIXME (спросить у преподавателя)
 
@@ -220,12 +312,17 @@ namespace lab1
                         }
                         OutputArray(array);
                         isArrayCreated = true;
-                        break;
+                        continue;
 
                     case 2: // Вывод массива
                         if (!isArrayCreated)
                         {
                             Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+                        if (!isArrayFull(array))
+                        {
+                            Console.WriteLine("Массив пустой");
                             break;
                         }
                         OutputArray(array);
@@ -284,14 +381,14 @@ namespace lab1
                             break;
                         }
 
-                        int addCount = ParsingVar("arrayLength", "Сколько элементов вы хотите добавить в массив? Введите, пожалуйста, целое число.");
+                        int addCount = ParsingIntVar("arrayLength", "Сколько элементов вы хотите добавить в массив? Введите, пожалуйста, целое число.");
                         int[] arrayTask2 = new int[array.Length + addCount];
 
                         Console.WriteLine("Как вы хотите добавить новые элементы массива? \n");
                         Console.WriteLine("1. Задать новые элементы массива случайно");
                         Console.WriteLine("2. Задать новые элементы массива вручную\n");
 
-                        mode = ParsingVar("mode", "Введите, пожалуйста, номер режима");
+                        mode = ParsingIntVar("mode", "Введите, пожалуйста, номер режима");
 
                         switch (mode)
                         {
@@ -311,21 +408,121 @@ namespace lab1
 
                         break;
 
-                    case 5: //  Третье задание
+                    case 5: //  Третье задание FIXME
+                        if (!isArrayCreated)
+                        {
+                            Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+
+                        // копирование массива в массив для 3 задания
+                        int[] arrayTask3 = new int[array.Length];
+                        arrayTask3 = CopyArray(array, arrayTask3);
+
+                        int stepShift = ParsingIntVar("stepShiftRight", "Насколько элементов нужно сдвинуть вправо? Введите целое положительное число.\n");
+
+                        for (int m = 0; m < stepShift; m++)
+                        {
+                            int temp = arrayTask3[array.Length - 1];
+
+                            for (int i = arrayTask3.Length - 2; i >= 0; i--)
+                            {
+                                arrayTask3[i + 1] = array[i];
+                                //arrayTask3[i] = temp;
+                            }
+
+                            arrayTask3[0] = temp;
+                        }
+                        Console.WriteLine($"Ваш массив сдвинут на {stepShift} элементов");
+
+                        Console.Write("Теперь ");
+                        OutputArray(arrayTask3);
+
+                        array = ChooseArray(array, arrayTask3);
                         break;
 
-                    case 6: //
-                        int countCompare = 0;
+                    case 6: // Четвертое задание
+                        if (!isArrayCreated)
+                        {
+                            Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+
+                        int countCompare = 0; // счётчик количества сравнений
+                        bool isNegativeFound = false;
+
                         for (int i = 0; i < array.Length; i++)
                         {
+                            countCompare++;
                             if (array[i] < 0)
                             {
-                                countCompare++;
-                                Console.WriteLine($"Первый отрицательный элемент в массиве = {array[i]}");
+                                Console.WriteLine($"Первый отрицательный элемент в массиве = {array[i]}, его порядковый номер {i + 1}");
+                                isNegativeFound = true;
                                 break;
                             }
                         }
-                        Console.WriteLine($"Количество сравнений, необходимо для поиска = {countCompare}\n");
+                        if (!isNegativeFound)
+                        {
+                            Console.WriteLine("В массиве нет отрицательных элементов");
+                        }
+
+                        Console.WriteLine($"Количество сравнений, необходимых для поиска = {countCompare}\n");
+                        break;
+
+                    case 7:
+                        if (!isArrayCreated)
+                        {
+                            Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+
+                        // копирование массива
+                        int[] arrayTask4 = new int[array.Length];
+                        arrayTask4 = CopyArray(array, arrayTask4);
+
+                        // сортировка выбором
+                        arrayTask4 = SortSelection(arrayTask4);
+                        isArraySorted = true;
+
+                        Console.Write("Теперь ");
+                        OutputArray(arrayTask4); // вывод массива
+
+                        // выбор пользователем с каким массивом продолжить работу
+                        array = ChooseArray(array, arrayTask4);
+                        break;
+
+                    case 8:
+                        if (!isArrayCreated)
+                        {
+                            Console.WriteLine("Массив не сформирован");
+                            break;
+                        }
+
+                        // сортировка массива
+                        int[] arraySorted = new int[array.Length];
+                        arraySorted = CopyArray(array, arraySorted);
+                        arraySorted = SortSelection(arraySorted);
+
+                        Console.WriteLine("Ваш массив был отсортирован");
+                        OutputArray(arraySorted);
+
+                        // ввод элемента, который нужно найти
+                        int element = ParsingIntVar("elem", "Введите целое число, которое хотите найти в массиве");
+
+                        // бинарный поиск
+                        int elemPosition = SearchBinary(arraySorted, element);
+
+                        if (elemPosition != -1) // если элемент найден
+                        {
+                            Console.Write($"\nЭлемент {element} есть в массиве, первый раз он встретился отсортированом массиве на {elemPosition} позиции\n");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"В массиве нет элемента {element}\n");
+                        }
+
+                        // выбор пользователем с каким массивом продолжить работу
+                        array = ChooseArray(array, arraySorted);
                         break;
 
                     case 0:
@@ -333,6 +530,18 @@ namespace lab1
                         isRunProgram = false;
                         break;
 
+                }
+
+                Console.WriteLine("\n1.Вернуться к меню\n2.Завершить программу\n");
+                int answ = ParsingIntVar("mode", "Введите, пожалуйста, номер действия");
+                switch (answ)
+                {
+                    case 1: 
+                        break;
+                    case 2:
+                        Console.WriteLine("\nКонец работы программы");
+                        isRunProgram = false;
+                        break;
                 }
             } while (isRunProgram);
 
