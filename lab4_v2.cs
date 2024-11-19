@@ -209,15 +209,12 @@ namespace lab1
         {
             int low = 0;
             int high = array.Length - 1;
-            //bool isElementFound = false;
 
             while (low <= high)
             {
                 int mid = (low + high) / 2;
                 if (array[mid] == element)
                 {
-                    //Console.Write($"Элемент {element} есть в массиве, его порядковый номер в отсортированом массиве = {mid + 1}\n");
-                    //isElementFound = true;
                     return mid + 1;
                 }
                 if (array[mid] < element)
@@ -250,25 +247,113 @@ namespace lab1
         }
 
         // сдвиг массива вправо
-        static int[] ShiftArrayRight(int[] array)
+        static int[] ShiftArrayRight(int[] array, ref int stepShift)
         {
+            for (int m = 0; m < stepShift; m++)
+            {
+                int temp = array[array.Length - 1];
+
+                for (int i = array.Length - 2; i >= 0; i--)
+                {
+                    array[i + 1] = array[i];
+                }
+
+                array[0] = temp;
+            }
             return array;
         }
 
         // проверка пустой ли массив
-        static bool isArrayFull(int[] array)
+        static bool isArrayExist(int[] array, ref bool isArrCreated)
         {
-            return array.Length > 0;
+            if (!isArrCreated)
+            {
+                Console.WriteLine("Массив не сформирован");
+                return false;
+            }
+            if (!(array.Length > 0))
+            {
+                Console.WriteLine("Массив пустой");
+                return false;
+            }
+            return true;
         }
-        
+
+        // вычисление кол-ва сравнений (для бинарного поиска)
+        static double CalcCountCompares(int lengthArray)
+        { 
+            return Math.Ceiling(Math.Log(lengthArray, 2)); ;
+        }
+
+        static int[] DeleteElemArray(int[] array)
+        {
+            int mMin = array[0];
+            int countMin = 0;
+
+            // поиск минимума
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] < mMin)
+                {
+                    mMin = array[i];
+                }
+            }
+            // подсчёт количества минимальных элементов
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == mMin)
+                {
+                    countMin++;
+                }
+            }
+            // формирование нового массива без удаленных элементов
+            int[] arrayNew = new int[array.Length - countMin];
+            int j = 0;
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] != mMin)
+                {
+                    arrayNew[j] = array[i];
+                    j++;
+                }
+            }
+            return arrayNew;
+        }
+
+        static void SearchFirstNegative(int[] array)
+        {
+            int countCompare = 0; // счётчик количества сравнений
+            bool isNegativeFound = false;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                countCompare++;
+                if (array[i] < 0)
+                {
+                    Console.WriteLine($"Первый отрицательный элемент в массиве = {array[i]}, его порядковый номер {i + 1}");
+                    isNegativeFound = true;
+                    break;
+                }
+            }
+            if (!isNegativeFound)
+            {
+                Console.WriteLine("В массиве нет отрицательных элементов");
+            }
+
+            Console.WriteLine($"Количество сравнений, необходимых для поиска = {countCompare}\n");
+        }
+
         static void Main(string[] args)
         {
-            // инициализация переменных
+            #region инициализация переменных
+
             int answer = -1; // выбор пользователя
             bool isArrayCreated = false; // создан ли массив
             bool isRunProgram = true; // работает ли программа
             bool isArraySorted = false; // отсортирован ли массив
-            int[] array = new int[1]; // создание массива
+            int[] array = new int[1]; // создание массива в памяти
+
+            #endregion
 
             // основной алгоритм
             do
@@ -315,69 +400,35 @@ namespace lab1
                         continue;
 
                     case 2: // Вывод массива
-                        if (!isArrayCreated)
+                        // проверка существования и заполненности массива
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
-                        if (!isArrayFull(array))
-                        {
-                            Console.WriteLine("Массив пустой");
-                            break;
-                        }
+
                         OutputArray(array);
                         break;
 
                     case 3: //  Первое задание (удаление элементов из массива)
-                        if (!isArrayCreated)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
 
-                        int mMin = array[0];
-                        int countMin = 0;
+                        // удаление минимального элемента массива
+                        int[] arrayTask1 = DeleteElemArray(array);
 
-                        // поиск минимума
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            if (array[i] < mMin)
-                            {
-                                mMin = array[i];
-                            }
-                        }
-                        // подсчёт количества минимальных элементов
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            if (array[i] == mMin)
-                            {
-                                countMin++;
-                            }
-                        }
-
-                        // формирование нового массива без удаленных элементов
-                        int[] arrayTask1 = new int[array.Length - countMin];
-                        int j = 0;
-
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            if (array[i] != mMin)
-                            {
-                                arrayTask1[j] = array[i];
-                                j++;
-                            }
-                        }
                         Console.Write("Теперь ");
                         OutputArray(arrayTask1); // вывод массива
 
-                        array = ChooseArray(array, arrayTask1); // пользователь выбирает с каким массивом продолжить работу
+                        // пользователь выбирает с каким массивом продолжить работу
+                        array = ChooseArray(array, arrayTask1); 
 
                         break;
 
                     case 4: //  Второе задание (добавление элементов в массив)
-                        if (!isArrayCreated)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
 
@@ -408,10 +459,9 @@ namespace lab1
 
                         break;
 
-                    case 5: //  Третье задание FIXME
-                        if (!isArrayCreated)
+                    case 5: //  Третье задание (циклический сдвиг массива вправо на М элементов)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
 
@@ -419,20 +469,12 @@ namespace lab1
                         int[] arrayTask3 = new int[array.Length];
                         arrayTask3 = CopyArray(array, arrayTask3);
 
+                        // считывание числа М (насколько сдвинуть массив)
                         int stepShift = ParsingIntVar("stepShiftRight", "Насколько элементов нужно сдвинуть вправо? Введите целое положительное число.\n");
 
-                        for (int m = 0; m < stepShift; m++)
-                        {
-                            int temp = arrayTask3[array.Length - 1];
-
-                            for (int i = arrayTask3.Length - 2; i >= 0; i--)
-                            {
-                                arrayTask3[i + 1] = array[i];
-                                //arrayTask3[i] = temp;
-                            }
-
-                            arrayTask3[0] = temp;
-                        }
+                        // циклический сдвиг вправо
+                        arrayTask3 = ShiftArrayRight(arrayTask3, ref stepShift);
+                        
                         Console.WriteLine($"Ваш массив сдвинут на {stepShift} элементов");
 
                         Console.Write("Теперь ");
@@ -441,38 +483,18 @@ namespace lab1
                         array = ChooseArray(array, arrayTask3);
                         break;
 
-                    case 6: // Четвертое задание
-                        if (!isArrayCreated)
+                    case 6: // Четвертое задание (поиск первого отрицательного элемента)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
-
-                        int countCompare = 0; // счётчик количества сравнений
-                        bool isNegativeFound = false;
-
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            countCompare++;
-                            if (array[i] < 0)
-                            {
-                                Console.WriteLine($"Первый отрицательный элемент в массиве = {array[i]}, его порядковый номер {i + 1}");
-                                isNegativeFound = true;
-                                break;
-                            }
-                        }
-                        if (!isNegativeFound)
-                        {
-                            Console.WriteLine("В массиве нет отрицательных элементов");
-                        }
-
-                        Console.WriteLine($"Количество сравнений, необходимых для поиска = {countCompare}\n");
+                        // поиск первого отрицательного элемента
+                        SearchFirstNegative(array);
                         break;
 
-                    case 7:
-                        if (!isArrayCreated)
+                    case 7: // Пятое задание (сортировка выбором)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
 
@@ -491,18 +513,20 @@ namespace lab1
                         array = ChooseArray(array, arrayTask4);
                         break;
 
-                    case 8:
-                        if (!isArrayCreated)
+                    case 8: // Шестое задание (бинарный поиск элемента)
+                        if (!isArrayExist(array, ref isArrayCreated))
                         {
-                            Console.WriteLine("Массив не сформирован");
                             break;
                         }
+
+                        // вычисление количества сравнений
+                        double countCompares = CalcCountCompares(array.Length);
 
                         // сортировка массива
                         int[] arraySorted = new int[array.Length];
                         arraySorted = CopyArray(array, arraySorted);
                         arraySorted = SortSelection(arraySorted);
-
+                        
                         Console.WriteLine("Ваш массив был отсортирован");
                         OutputArray(arraySorted);
 
@@ -514,24 +538,25 @@ namespace lab1
 
                         if (elemPosition != -1) // если элемент найден
                         {
-                            Console.Write($"\nЭлемент {element} есть в массиве, первый раз он встретился отсортированом массиве на {elemPosition} позиции\n");
+                            Console.Write($"\nЭлемент {element} есть в массиве, его порядковый номер в отсортированом массиве = {elemPosition}");
                         }
                         else
                         {
-                            Console.WriteLine($"В массиве нет элемента {element}\n");
+                            Console.WriteLine($"В массиве нет элемента {element}");
                         }
+                        Console.WriteLine($"\nКоличество сравнений = {countCompares}");
 
                         // выбор пользователем с каким массивом продолжить работу
                         array = ChooseArray(array, arraySorted);
                         break;
 
-                    case 0:
+                    case 0: // конец работы программы
                         Console.WriteLine("\nКонец работы программы");
                         isRunProgram = false;
                         break;
-
                 }
 
+                #region финиш программы
                 Console.WriteLine("\n1.Вернуться к меню\n2.Завершить программу\n");
                 int answ = ParsingIntVar("mode", "Введите, пожалуйста, номер действия");
                 switch (answ)
@@ -543,8 +568,9 @@ namespace lab1
                         isRunProgram = false;
                         break;
                 }
-            } while (isRunProgram);
+                #endregion
 
+            } while (isRunProgram);
 
             Console.ReadLine();
         }
