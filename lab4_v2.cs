@@ -251,14 +251,14 @@ namespace lab1
         {
             for (int m = 0; m < stepShift; m++)
             {
-                int temp = array[array.Length - 1];
+                int temp = array[array.Length - 1]; // сохраняется последний элемент массива
 
-                for (int i = array.Length - 2; i >= 0; i--)
+                for (int i = array.Length - 2; i >= 0; i--) // перебор с конца
                 {
-                    array[i + 1] = array[i];
+                    array[i + 1] = array[i]; // текущий элемент переходит на следующую позицию
                 }
 
-                array[0] = temp;
+                array[0] = temp; // на первую позицию встает последний элемент
             }
             return array;
         }
@@ -457,7 +457,7 @@ namespace lab1
                                 break;
                         }
                         Console.Write("Теперь ");
-                        OutputArray(array);
+                        OutputArray(arrayTask2);
                         isArrayCreated = true;
 
                         // пользователь выбирает с каким массивом продолжить работу
@@ -535,11 +535,14 @@ namespace lab1
                         // сортировка массива
                         int[] arraySorted = new int[array.Length];
                         arraySorted = CopyArray(array, arraySorted);
-                        arraySorted = SortSelection(arraySorted);
 
-                        Console.WriteLine("Ваш массив был отсортирован");
-                        OutputArray(arraySorted);
-
+                        if (!isArraySorted) // если массив не отсортирован
+                        {
+                            arraySorted = SortSelection(arraySorted);
+                            Console.WriteLine("Ваш массив был отсортирован");
+                            OutputArray(arraySorted);
+                        }
+                        
                         // ввод элемента, который нужно найти
                         int element = ParsingIntVar("elem", "Введите целое число, которое хотите найти в массиве");
 
