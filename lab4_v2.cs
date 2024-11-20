@@ -156,7 +156,7 @@ namespace lab1
         }
 
         // добавление случайных элементов в массив
-        static int[] AddArrayRandom(int[] array, int addCount)
+        static int[] AddElemArrayRandom(int[] array, int addCount)
         {
             int[] newArray = new int[array.Length + addCount];
             Random rand = new Random();
@@ -176,7 +176,7 @@ namespace lab1
         }
 
         // добавление заданных элементов в массив
-        static int[] AddArray(int[] array, int addCount)
+        static int[] AddElemArray(int[] array, int addCount)
         {
             int[] newArray = new int[array.Length + addCount];
 
@@ -287,15 +287,15 @@ namespace lab1
 
         static int[] DeleteElemArray(int[] array)
         {
-            int mMin = array[0];
+            int mMin = array[0]; // 
             int countMin = 0;
 
             // поиск минимума
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] < mMin)
+                if (array[i] < mMin) // если текущий элемент меньше минимального
                 {
-                    mMin = array[i];
+                    mMin = array[i]; // минимальным становится текущий элемент
                 }
             }
             // подсчёт количества минимальных элементов
@@ -418,12 +418,17 @@ namespace lab1
                         // удаление минимального элемента массива
                         int[] arrayTask1 = DeleteElemArray(array);
 
-                        Console.Write("Теперь ");
-                        OutputArray(arrayTask1); // вывод массива
-
+                        if (arrayTask1.Length > 0)
+                        {
+                            Console.Write("Теперь ");
+                            OutputArray(arrayTask1); // вывод массива
+                        }
+                        else
+                        {
+                            Console.Write("\nТеперь ваш массив пустой\n");
+                        }
                         // пользователь выбирает с каким массивом продолжить работу
                         array = ChooseArray(array, arrayTask1);
-
                         break;
 
                     case 4: //  Второе задание (добавление элементов в массив)
@@ -445,10 +450,10 @@ namespace lab1
                         switch (mode)
                         {
                             case 1: // случайные числа
-                                arrayTask2 = AddArrayRandom(array, addCount);
+                                arrayTask2 = AddElemArrayRandom(array, addCount);
                                 break;
                             case 2:
-                                arrayTask2 = AddArray(array, addCount);
+                                arrayTask2 = AddElemArray(array, addCount);
                                 break;
                         }
                         Console.Write("Теперь ");
