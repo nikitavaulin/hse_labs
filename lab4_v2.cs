@@ -281,7 +281,7 @@ namespace lab1
 
         // вычисление кол-ва сравнений (для бинарного поиска)
         static double CalcCountCompares(int lengthArray)
-        { 
+        {
             return Math.Ceiling(Math.Log(lengthArray, 2)); ;
         }
 
@@ -351,7 +351,7 @@ namespace lab1
             bool isArrayCreated = false; // создан ли массив
             bool isRunProgram = true; // работает ли программа
             bool isArraySorted = false; // отсортирован ли массив
-            int[] array = new int[1]; // создание массива в памяти
+            int[] array = null; // создание массива в памяти
 
             #endregion
 
@@ -370,7 +370,7 @@ namespace lab1
                 Console.WriteLine("7. Отсортировать массив по возрастанию (задание 5)");
                 Console.WriteLine("8. Найти элемент в массиве (задание 6)");
                 Console.WriteLine("0. Завершить работу программы\n");
-                
+
                 // выбор пользователем действия
                 answer = ParsingIntVar("answer", "Введите номер действия\n");
                 #endregion
@@ -383,20 +383,19 @@ namespace lab1
 
                         int mode = ParsingIntVar("mode", "Введите, пожалуйста, номер режима");
                         int arrayLength = ParsingIntVar("arrayLength", "\nВведите, пожалуйста, длину массива");
-
-                        Array.Resize(ref array, arrayLength);   // FIXME (спросить у преподавателя)
+                        array = new int[arrayLength]; // расширение памяти для массива
 
                         switch (mode)
                         {
                             case 1: // массив случайных чисел
                                 array = GetRandomArray(array);
                                 break;
-                            case 2:
+                            case 2: // массив заданных чисел
                                 array = GetArray(array);
                                 break;
                         }
-                        OutputArray(array);
-                        isArrayCreated = true;
+                        OutputArray(array);     // вывод массива
+                        isArrayCreated = true; // массив создан
                         continue;
 
                     case 2: // Вывод массива
@@ -410,6 +409,7 @@ namespace lab1
                         break;
 
                     case 3: //  Первое задание (удаление элементов из массива)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -422,11 +422,12 @@ namespace lab1
                         OutputArray(arrayTask1); // вывод массива
 
                         // пользователь выбирает с каким массивом продолжить работу
-                        array = ChooseArray(array, arrayTask1); 
+                        array = ChooseArray(array, arrayTask1);
 
                         break;
 
                     case 4: //  Второе задание (добавление элементов в массив)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -460,6 +461,7 @@ namespace lab1
                         break;
 
                     case 5: //  Третье задание (циклический сдвиг массива вправо на М элементов)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -474,7 +476,7 @@ namespace lab1
 
                         // циклический сдвиг вправо
                         arrayTask3 = ShiftArrayRight(arrayTask3, ref stepShift);
-                        
+
                         Console.WriteLine($"Ваш массив сдвинут на {stepShift} элементов");
 
                         Console.Write("Теперь ");
@@ -484,6 +486,7 @@ namespace lab1
                         break;
 
                     case 6: // Четвертое задание (поиск первого отрицательного элемента)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -493,6 +496,7 @@ namespace lab1
                         break;
 
                     case 7: // Пятое задание (сортировка выбором)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -514,6 +518,7 @@ namespace lab1
                         break;
 
                     case 8: // Шестое задание (бинарный поиск элемента)
+                        // проверка существования и заполненности массива
                         if (!isArrayExist(array, ref isArrayCreated))
                         {
                             break;
@@ -526,7 +531,7 @@ namespace lab1
                         int[] arraySorted = new int[array.Length];
                         arraySorted = CopyArray(array, arraySorted);
                         arraySorted = SortSelection(arraySorted);
-                        
+
                         Console.WriteLine("Ваш массив был отсортирован");
                         OutputArray(arraySorted);
 
@@ -561,7 +566,7 @@ namespace lab1
                 int answ = ParsingIntVar("mode", "Введите, пожалуйста, номер действия");
                 switch (answ)
                 {
-                    case 1: 
+                    case 1:
                         break;
                     case 2:
                         Console.WriteLine("\nКонец работы программы");
