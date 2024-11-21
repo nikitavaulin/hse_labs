@@ -43,7 +43,7 @@ namespace lab1
                             isParse = InBound(outputValue, 1);
                             if (!isParse)
                             {
-                                Console.WriteLine($"Длина массива должна быть больше 0, в пределах Int32. Повторите, пожалуйста, ввод.\n");
+                                Console.WriteLine($"Введите число больше 0. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
 
