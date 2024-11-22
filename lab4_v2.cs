@@ -247,7 +247,7 @@ namespace lab1
         }
 
         // сдвиг массива вправо
-        static int[] ShiftArrayRight(int[] array, ref int stepShift)
+        static int[] ShiftArrayRight(int[] array, int stepShift)
         {
             for (int m = 0; m < stepShift; m++)
             {
@@ -264,7 +264,7 @@ namespace lab1
         }
 
         // проверка пустой ли массив
-        static bool isArrayExist(int[] array, ref bool isArrCreated)
+        static bool isArrayExist(int[] array,  bool isArrCreated)
         {
             if (!isArrCreated)
             {
@@ -400,7 +400,7 @@ namespace lab1
 
                     case 2: // Вывод массива
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -410,7 +410,7 @@ namespace lab1
 
                     case 3: //  Первое задание (удаление элементов из массива)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -433,7 +433,7 @@ namespace lab1
 
                     case 4: //  Второе задание (добавление элементов в массив)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -467,7 +467,7 @@ namespace lab1
 
                     case 5: //  Третье задание (циклический сдвиг массива вправо на М элементов)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -480,7 +480,7 @@ namespace lab1
                         int stepShift = ParsingIntVar("stepShiftRight", "Насколько элементов нужно сдвинуть вправо? Введите целое положительное число.\n");
 
                         // циклический сдвиг вправо
-                        arrayTask3 = ShiftArrayRight(arrayTask3, ref stepShift);
+                        arrayTask3 = ShiftArrayRight(arrayTask3,  stepShift);
 
                         Console.WriteLine($"Ваш массив сдвинут на {stepShift} элементов");
 
@@ -492,7 +492,7 @@ namespace lab1
 
                     case 6: // Четвертое задание (поиск первого отрицательного элемента)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -502,7 +502,7 @@ namespace lab1
 
                     case 7: // Пятое задание (сортировка выбором)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
@@ -524,7 +524,7 @@ namespace lab1
 
                     case 8: // Шестое задание (бинарный поиск элемента)
                         // проверка существования и заполненности массива
-                        if (!isArrayExist(array, ref isArrayCreated))
+                        if (!isArrayExist(array,  isArrayCreated))
                         {
                             break;
                         }
