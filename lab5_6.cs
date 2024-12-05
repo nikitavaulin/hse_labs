@@ -43,7 +43,7 @@ namespace lab1
                         case VarClass.length:
                             isParsed = IsInBound(inputNum, 1, 50);
                             if (!isParsed)
-                            { 
+                            {
                                 Console.WriteLine("Длина измерения может быть в диапазонее от 1 до 50. Повторите, пожалуйста, ввод.\n");
                             }
                             break;
@@ -119,7 +119,7 @@ namespace lab1
         {
             int[,] matrix = new int[rows, columns];
             Random rand = new Random();
-            for (int row = 0; row < matrix.GetLength(0); row++) 
+            for (int row = 0; row < matrix.GetLength(0); row++)
             {
                 for (int i = 0; i < columns; i++)
                 {
@@ -148,7 +148,7 @@ namespace lab1
             {
                 for (int column = 0; column < matrix.GetLength(1); column++)
                 {
-                    Console.Write($"{matrix[row, column], -5}");
+                    Console.Write($"{matrix[row, column],-5}");
                 }
                 Console.WriteLine();
             }
@@ -157,7 +157,7 @@ namespace lab1
         static int[,] ExpandMatrix(int[,] matrix, int position)
         {
             int[,] newMatrix = new int[matrix.GetLength(0), matrix.GetLength(1) + 1];
-            
+
             for (int row = 0; row < newMatrix.GetLength(0); row++)
             {
                 int column = 0;
@@ -236,7 +236,7 @@ namespace lab1
                 // кол-во  элементов в строке
                 int countElement = ParsingIntVars(VarClass.length, $"Введите количество элементов в строке {str + 1}");
                 // выделение памяти под строку массива
-                ragArr[str] = new int[countElement];    
+                ragArr[str] = new int[countElement];
 
                 for (int elem = 0; elem < countElement; elem++)
                 {
@@ -267,7 +267,7 @@ namespace lab1
 
         #region Задание для рваного массива
         static int[][] DeleteMinStrRagArr(int[][] ragArr, int countMinStr, int minLen)
-        {   
+        {
             int[][] newRagArr = new int[ragArr.GetLength(0) - countMinStr][];
             int line = 0;
             for (int str = 0; str < ragArr.GetLength(0); str++)
@@ -314,6 +314,29 @@ namespace lab1
         #endregion
 
         #endregion
+
+        #region Строки
+        static string ReverseString(string str)
+        {
+            string[] arrayWord = str.Split(' ');
+            for (int wordInd = 0; wordInd < arrayWord.Length; wordInd++)
+            {
+               
+            }
+            return "0";
+        }
+
+        static string ReverseWord()
+        {
+            return "0";
+        }
+
+        static string CreateString()
+        {
+            return "0";
+        }
+
+        #endregion
         static void Main(string[] args)
         {
             #region Инициализация переменных
@@ -333,7 +356,7 @@ namespace lab1
                     #region Двумерный массив
                     case 1: // формирование двумерного массива
                         PrintMsgChoiceMode("\nКак вы хотите заполнить массив?");
-                        int mode = ParsingIntVars(VarClass.mode, "Введите номер режима ввода:");
+                        int mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
 
                         int rows = ParsingIntVars(VarClass.length, "\nВведите количество строк");
                         int columns = ParsingIntVars(VarClass.length, "\nВведите количество столбцов");
