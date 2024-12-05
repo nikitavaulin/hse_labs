@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace lab1
 {
@@ -98,12 +99,19 @@ namespace lab1
             Console.WriteLine("4. Создать рваный массив");
             Console.WriteLine("5. Напечатать рваный массив");
             Console.WriteLine("6. Удалить минимальную строку из рваного массива");
-            //Console.WriteLine("7. ");
-            //Console.WriteLine("");
-            //Console.WriteLine("");
+            Console.WriteLine("7. Ввести строку");
+            Console.WriteLine("8. Напечатать строку");
+            Console.WriteLine("9. Перевернуть каждое чётное слово в строке");
             Console.WriteLine("0. Завершить работу программы");
         }
-
+        static void PrintChoiceString(string[] strArray)
+        {
+            Console.WriteLine("\nВыберите строку для работы.");
+            for (int i = 0; i < strArray.Length; i++)
+            {
+                Console.WriteLine($"{i+1}) {strArray[i]}");
+            }
+        }
         static void PrintMsgChoiceMode(string message)
         {
             Console.WriteLine(message);
@@ -113,6 +121,8 @@ namespace lab1
 
         static bool isObjEmpty(int[,] obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(int[][] obj) => obj == null || obj.Length == 0;
+        static bool isObjEmpty(string obj) => obj == null || obj.Length == 0;
+        static bool isObjEmpty(char[] obj) => obj == null || obj.Length == 0;
 
         #region Двумерный массив
         static int[,] CreateRandomMatrix(int rows, int columns)
@@ -316,24 +326,122 @@ namespace lab1
         #endregion
 
         #region Строки
-        static string ReverseString(string str)
+        static void PrintString(string str, string msg = "\nВаша строка:")
+        {
+            if (isObjEmpty(str))
+            {
+                Console.WriteLine("\nСтрока пустая");
+            }
+            else
+            {
+                Console.WriteLine(msg);
+                Console.WriteLine(str);
+            }
+        }
+
+        static string ReverseEvenWordStr(string str)
         {
             string[] arrayWord = str.Split(' ');
-            for (int wordInd = 0; wordInd < arrayWord.Length; wordInd++)
+
+
+            for (int wordInd = 1; wordInd < arrayWord.Length; wordInd += 2)
             {
-               
+                char[] wordChars = arrayWord[wordInd].ToCharArray();
+                wordChars = ReverseWord(wordChars);
+
+                if (isObjEmpty(wordChars))
+                {
+                    return null;
+                }
+
+                string reversedWord = new string(wordChars);
+                arrayWord[wordInd] = reversedWord;
             }
-            return "0";
+
+            string reversedString = String.Join(" ", arrayWord);
+
+            return reversedString;
         }
 
-        static string ReverseWord()
+        static char[] ReverseWord(char[] arrChars)
         {
-            return "0";
+            if (isObjEmpty(arrChars))
+            {
+                return null;
+            }
+
+            Array.Reverse(arrChars);
+            char lastChar = arrChars[0];
+
+            if (isSign(lastChar))
+            {
+                arrChars = ShiftArrayLeft(arrChars);
+                return arrChars;
+            }
+            return arrChars;
         }
 
-        static string CreateString()
+        static bool isSign(char checkChar, string signs = ".,!;:?") => signs.Contains(checkChar);
+
+        static bool isSpaceClose(string str) => str.Contains("  "); // FIXME    ИСПРАВИТЬ НА ПРОВЕРКУ ВСЕХ ЗНАКОВ
+
+        static bool isStringValid(string str)
         {
-            return "0";
+            string alphabet = " QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnmЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁйцукенгшщзхъфывапролджэячсмитьбюё.,!;:?";
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (!alphabet.Contains(str[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        static char[] ShiftArrayLeft(char[] array)
+        {
+            char firstChar = array[0];
+            for (int i = 0; i < array.Length - 1; i++)
+            {
+                array[i] = array[i + 1];
+            }
+            array[array.Length - 1] = firstChar;
+
+            return array;
+        }
+
+        static string ParsingString(string msg)
+        {
+            string str = null;
+            bool isStrValid = true;
+            do
+            {
+                try
+                {
+                    Console.WriteLine(msg);
+                    str = Console.ReadLine();
+
+                    isStrValid = isStringValid(str);
+                    if (!isStrValid)
+                    {
+                        isStrValid = false;
+                        Console.WriteLine("\nВ строке есть неподходящие символы. Повторите, пожалуйста, ввод.");
+                    }
+                    if (isSpaceClose(str))
+                    {
+                        isStrValid = false;
+                        Console.WriteLine("\nВ строке не могут стоять несколько пробелов подряд. Повторите, пожалуйста, ввод.");
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("\nНепредвиденная ошибка. Повторите, пожалуйста, ввод.");
+                    isStrValid = false;
+                }
+
+
+            }while(!isStrValid);
+            return str;
         }
 
         #endregion
@@ -343,6 +451,7 @@ namespace lab1
             bool isFinishProgram = false;
             int[,] matrix = null;
             int[][] ragArray = null;
+            string str = null;
             #endregion
 
             // Main body
@@ -455,13 +564,31 @@ namespace lab1
                     #endregion
 
                     #region Строки
-                    case 7:
+                    case 7: // ввод строки
+                        string[] testArrayString = {
+                        "В лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                        "Была лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                        "В траве сидел кузнечик! Кузнечик: не трогал козявок и дружил с мухом."};
+
+                        str = ParsingString("Введите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:? ");
+
+                        PrintString(str);
                         break;
 
-                    case 8:
+                    case 8: // печать строки
+                        PrintString(str);
                         break;
 
-                    case 9:
+                    case 9: // перевернуть каждое чётное слово в строке
+                        if (isObjEmpty(str))
+                        {
+                            Console.WriteLine("\nСтрока пустая");
+                            break;
+                        }
+
+                        str = ReverseEvenWordStr(str);
+
+                        PrintString(str, "\nВаша новая строка:");
                         break;
                     #endregion
 
