@@ -9,37 +9,52 @@ namespace lab1
 {
     internal class lab5
     {
-        enum VarClass
+        enum VarClass   // перечисление классов переменных
         {
-            element,
-            length,
-            answerStartMenu,
-            answerObjectMenu,
-            strNumber,
-            columnPosition,
-            mode
+            element,            // элементы массивов 
+            length,             // длина измерений
+            answerStartMenu,    // выбор в стартовом меню
+            answerObjectMenu,   // выбор в меню объекта
+            strNumber,          // номер выбранной строки
+            columnPosition,     // позиция добавляемого столбца
+            mode                // выбор режима ввода
         }
-        enum MsgClass
+        enum MsgClass   // перечисление классов сообщений меню
         {
-            StartMenu,
-            MatrixMenu,
-            RagArrMenu,
-            StringMenu,
+            StartMenu,     // стартовое меню
+            MatrixMenu,    // меню двумерного массива
+            RagArrMenu,    // меню рваного массива
+            StringMenu     // меню строк
         }
 
+        /// <summary>
+        /// Метод провеки находится ли число в заданных границах
+        /// </summary>
+        /// <param name="number">проверяемое число</param>
+        /// <param name="downBound">нижняя граница</param>
+        /// <param name="upBound">верхняя граница</param>
+        /// <returns>Истина / Ложь</returns>
         static bool IsInBound(int number, int downBound = -2147483648, int upBound = 2147483647) => downBound <= number && number <= upBound;
+
+        /// <summary>
+        /// Метод считывания введённой переменной типа Int32
+        /// </summary>
+        /// <param name="varClass">Класс переменной</param>
+        /// <param name="message">Сообщение для вывода</param>
+        /// <returns>Int32 значение</returns>
         static int ParsingIntVars(VarClass varClass, string message)
         {
-            bool isParsed = true;
-            int inputNum = 0;
+            bool isParsed = true;       // флаг верно ли считалось значение
+            int inputNum = 0;           // введенное значение
 
             do
             {
                 try
                 {
                     Console.WriteLine(message);
-                    inputNum = Convert.ToInt32(Console.ReadLine());
+                    inputNum = Convert.ToInt32(Console.ReadLine());    // считывание значения
 
+                    // проверки удовлетворяет ли значение переменной условиям своего класса
                     switch (varClass)
                     {
                         case VarClass.element:
@@ -110,20 +125,26 @@ namespace lab1
                     isParsed = false;
                 }
 
-            } while (!isParsed);
+            } while (!isParsed);    // пока не будет введено верно
 
             return inputNum;
         }
 
+        #region Методы Print (вывод в консоль)
+        /// <summary>
+        /// Метод вывода в консоль разных меню
+        /// </summary>
+        /// <param name="msgClass"> Классы сообщений меню</param>
+        /// <param name="message">Сообщение для вывода</param>
         static void PrintMenu(MsgClass msgClass, string message)
         {
             switch (msgClass)
             {
                 case (MsgClass.StartMenu):
                     Console.WriteLine(message);
-                    Console.WriteLine("1. Двумерный массив");
-                    Console.WriteLine("2. Рваный массив");
-                    Console.WriteLine("3. Строка");
+                    Console.WriteLine("1. Обработка двумерного массива");
+                    Console.WriteLine("2. Обработка рваного массив");
+                    Console.WriteLine("3. Обработка строки");
                     Console.WriteLine("0. Завершить работу программы");
                     break;
 
@@ -150,28 +171,37 @@ namespace lab1
             }
         }
 
+        /// <summary>
+        /// Метод вывода в консоль массива тестовых строк
+        /// </summary>
+        /// <param name="strArray">Массив тестовых строк</param>
         static void PrintArrString(string[] strArray)
         {
-            //Console.WriteLine("\nВыберите строку для работы.");
-            for (int i = 0; i < strArray.Length; i++)
+            for (int i = 0; i < strArray.Length; i++)       // перебор по индексу каждого элемента массива
             {
-                Console.WriteLine($"{i+1}) {strArray[i]}");
+                Console.WriteLine($"{i+1}) {strArray[i]}");       // вывод в консоль строки с нумерацией
             }
         }
-        static void PrintMsgChoiceMode(string message)
+        static void PrintMsgChoiceMode(string message)       // вывод в консоль выбор режима ввода массивов
         {
             Console.WriteLine(message);
             Console.WriteLine("1. Случайный ввод");
             Console.WriteLine("2. Ручной ввод");
         }
-        static void PrintMsgChoiceCreateStr(string message) // Удалить
+        static void PrintMsgChoiceCreateStr(string message)  // вывод в консоль выбор режима ввода строк
         {
             Console.WriteLine(message);
             Console.WriteLine("1. Выбрать строку из массива готовых строк");
             Console.WriteLine("2. Ввести строку вручную");
         }
+        #endregion
 
         #region Проверка на пустоту
+        /// <summary>
+        /// Метод проверки пустой ли объект (3 перегрузки)
+        /// </summary>
+        /// <param name="obj">Двумерный массив / Рваный массив / Строка / Массив символов</param>
+        /// <returns>Истина / Ложь</returns>
         static bool isObjEmpty(int[,] obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(int[][] obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(string obj) => obj == null || obj.Length == 0;
@@ -179,20 +209,32 @@ namespace lab1
         #endregion
 
         #region Двумерный массив
+        /// <summary>
+        /// Создание двумерного массива с помощью ДСЧ
+        /// </summary>
+        /// <param name="rows">строки</param>
+        /// <param name="columns">столбцы</param>
+        /// <returns>двумерный массив</returns>
         static int[,] CreateRandomMatrix(int rows, int columns)
         {
-            int[,] matrix = new int[rows, columns];
+            int[,] matrix = new int[rows, columns];     // выделение памяти под матрицу
             Random rand = new Random();
-            for (int row = 0; row < matrix.GetLength(0); row++)
+            for (int row = 0; row < matrix.GetLength(0); row++)      // перебор индексов строк
             {
-                for (int i = 0; i < columns; i++)
+                for (int column = 0; column < columns; column++)     // перебор индексов столбцов
                 {
-                    matrix[row, i] = rand.Next(-100, 100);
+                    matrix[row, column] = rand.Next(-100, 100);     // присваивание рандомного числа
                 }
             }
             return matrix;
         }
 
+        /// <summary>
+        /// Создание двумерного массива
+        /// </summary>
+        /// <param name="rows">строки</param>
+        /// <param name="columns">столбцы</param>
+        /// <returns>двумерный массив</returns>
         static int[,] CreateMatrix(int rows, int columns)
         {
             int[,] matrix = new int[rows, columns];
@@ -200,36 +242,45 @@ namespace lab1
             {
                 for (int i = 0; i < columns; i++)
                 {
-                    matrix[row, i] = ParsingIntVars(VarClass.element, $"Введите элемент [{row},{i}] двумерного массива");
+                    matrix[row, i] = ParsingIntVars(VarClass.element, $"Введите элемент [{row},{i}] двумерного массива"); // присваивание введеного числа в элемент массива
                 }
             }
             return matrix;
         }
 
-        static void PrintMatrix(int[,] matrix)
+        static void PrintMatrix(int[,] matrix)      // вывод матрицы в консоль
         {
-            for (int row = 0; row < matrix.GetLength(0); row++)
+            for (int row = 0; row < matrix.GetLength(0); row++)      // перебор строк
             {
-                for (int column = 0; column < matrix.GetLength(1); column++)
+                for (int column = 0; column < matrix.GetLength(1); column++)      // перебор столбцов
                 {
-                    Console.Write($"{matrix[row, column],-5}");
+                    Console.Write($"{matrix[row, column], -5}");       // вывод элемента матрицы
                 }
                 Console.WriteLine();
             }
         }
 
+        /// <summary>
+        /// Метод расшрирения матрицы, путем добавления нового столбца
+        /// </summary>
+        /// <param name="matrix">исходный двумерный массив</param>
+        /// <param name="position">позиция нового столбца</param>
+        /// <returns>расширенный двумерный массив</returns>
         static int[,] ExpandMatrix(int[,] matrix, int position)
         {
-            int[,] newMatrix = new int[matrix.GetLength(0), matrix.GetLength(1) + 1];
+            // выделение памяти под новую матрицу с количеством столбцов + 1
+            int[,] newMatrix = new int[matrix.GetLength(0), matrix.GetLength(1) + 1];  
 
-            for (int row = 0; row < newMatrix.GetLength(0); row++)
+            for (int row = 0; row < newMatrix.GetLength(0); row++)      
             {
                 int column = 0;
-                for (int columnNewMatr = 0; columnNewMatr < position; columnNewMatr++)
+                // копирование столбцов матрицы до нового столбца
+                for (int columnNewMatr = 0; columnNewMatr < position; columnNewMatr++) 
                 {
                     newMatrix[row, columnNewMatr] = matrix[row, column];
                     column++;
                 }
+                // копирование столбцов матрицы после нового столбца
                 for (int columnNewMatr = position + 1; columnNewMatr < newMatrix.GetLength(1); columnNewMatr++)
                 {
                     newMatrix[row, columnNewMatr] = matrix[row, column];
@@ -239,6 +290,12 @@ namespace lab1
             return newMatrix;
         }
 
+        /// <summary>
+        /// Метод заполнения нового столбца матрицы
+        /// </summary>
+        /// <param name="matrix">исходная матрица</param>
+        /// <param name="position">позиция нового столбца</param>
+        /// <returns>новая матрица</returns>
         static int[,] FillColumnMatrix(int[,] matrix, int position)
         {
             Random rand = new Random();
@@ -249,12 +306,23 @@ namespace lab1
             return matrix;
         }
 
+        /// <summary>
+        /// Метод добавления в матрицу нового столбца
+        /// </summary>
+        /// <param name="matrix">двумерный массив</param>
+        /// <param name="position">позиция нового столбца</param>
+        /// <returns>новая матрица</returns>
         static int[,] AddColumnMatrix(int[,] matrix, int position)
         {
             int[,] newMatrix = FillColumnMatrix(ExpandMatrix(matrix, position), position);
             return newMatrix;
         }
 
+        /// <summary>
+        /// Метод считывания позиции нового столбца
+        /// </summary>
+        /// <param name="matrixColumnCount">текущее количество столбцов матрицы</param>
+        /// <returns>позиция нового столбца</returns>
         static int GetColumnPos(int matrixColumnCount)
         {
             bool isValid = false;
@@ -532,7 +600,7 @@ namespace lab1
             // Main body
             do
             {
-                PrintMenu(MsgClass.StartMenu, "\nВыберите объект для обработки:");
+                PrintMenu(MsgClass.StartMenu, "\nМеню выбора действий:");
                 int answerStart = ParsingIntVars(VarClass.answerStartMenu, "\nВведите номер действия:");
 
                 switch (answerStart)
@@ -682,7 +750,7 @@ namespace lab1
                                         break;
 
                                     case 2: // ввод строки пользователем
-                                        str = ParsingString("Введите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:?");
+                                        str = ParsingString("\nВведите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:?");
                                         break;
                                 }
 
