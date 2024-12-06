@@ -13,9 +13,18 @@ namespace lab1
         {
             element,
             length,
-            answer,
+            answerStartMenu,
+            answerObjectMenu,
+            strNumber,
             columnPosition,
             mode
+        }
+        enum MsgClass
+        {
+            StartMenu,
+            MatrixMenu,
+            RagArrMenu,
+            StringMenu,
         }
 
         static bool IsInBound(int number, int downBound = -2147483648, int upBound = 2147483647) => downBound <= number && number <= upBound;
@@ -49,11 +58,27 @@ namespace lab1
                             }
                             break;
 
-                        case VarClass.answer:
-                            isParsed = IsInBound(inputNum, 0, 10); // FIXME
+                        case VarClass.answerStartMenu:
+                            isParsed = IsInBound(inputNum, 0, 3);
                             if (!isParsed)
                             {
-                                Console.WriteLine("Введите число от 0 до 10. Повторите, пожалуйста, ввод.\n");  // FIXME
+                                Console.WriteLine("Введите число от 0 до 3. Повторите, пожалуйста, ввод.\n");
+                            }
+                            break;
+
+                        case VarClass.answerObjectMenu:
+                            isParsed = IsInBound(inputNum, 1, 3);
+                            if (!isParsed)
+                            {
+                                Console.WriteLine("Введите число от 1 до 3. Повторите, пожалуйста, ввод.\n");
+                            }
+                            break;
+
+                        case VarClass.strNumber:
+                            isParsed = IsInBound(inputNum, 1, 3); // зависит от размера массива тестовых строк
+                            if (!isParsed)
+                            {
+                                Console.WriteLine("Введите число от 1 до 3. Повторите, пожалуйста, ввод.\n");  // зависит от размера массива тестовых строк
                             }
                             break;
 
@@ -90,23 +115,44 @@ namespace lab1
             return inputNum;
         }
 
-        static void PrintMenu()
+        static void PrintMenu(MsgClass msgClass, string message)
         {
-            Console.WriteLine("\nМеню действий:");
-            Console.WriteLine("1. Создать двумерный массив");
-            Console.WriteLine("2. Напечатать двумерный массив");
-            Console.WriteLine("3. Добавить новый столбец в двумерный массив");
-            Console.WriteLine("4. Создать рваный массив");
-            Console.WriteLine("5. Напечатать рваный массив");
-            Console.WriteLine("6. Удалить минимальную строку из рваного массива");
-            Console.WriteLine("7. Ввести строку");
-            Console.WriteLine("8. Напечатать строку");
-            Console.WriteLine("9. Перевернуть каждое чётное слово в строке");
-            Console.WriteLine("0. Завершить работу программы");
+            switch (msgClass)
+            {
+                case (MsgClass.StartMenu):
+                    Console.WriteLine(message);
+                    Console.WriteLine("1. Двумерный массив");
+                    Console.WriteLine("2. Рваный массив");
+                    Console.WriteLine("3. Строка");
+                    Console.WriteLine("0. Завершить работу программы");
+                    break;
+
+                case (MsgClass.MatrixMenu):
+                    Console.WriteLine(message);
+                    Console.WriteLine("1. Создать двумерный массив");
+                    Console.WriteLine("2. Напечатать двумерный массив");
+                    Console.WriteLine("3. Добавить новый столбец в двумерный массив");
+                    break;
+
+                case (MsgClass.RagArrMenu):
+                    Console.WriteLine(message);
+                    Console.WriteLine("1. Создать рваный массив");
+                    Console.WriteLine("2. Напечатать рваный массив");
+                    Console.WriteLine("3. Удалить минимальную строку из рваного массива");
+                    break;
+
+                case (MsgClass.StringMenu):
+                    Console.WriteLine(message);
+                    Console.WriteLine("1. Ввести строку");
+                    Console.WriteLine("2. Напечатать строку");
+                    Console.WriteLine("3. Перевернуть каждое чётное слово в строке");
+                    break;
+            }
         }
-        static void PrintChoiceString(string[] strArray)
+
+        static void PrintArrString(string[] strArray)
         {
-            Console.WriteLine("\nВыберите строку для работы.");
+            //Console.WriteLine("\nВыберите строку для работы.");
             for (int i = 0; i < strArray.Length; i++)
             {
                 Console.WriteLine($"{i+1}) {strArray[i]}");
@@ -118,11 +164,19 @@ namespace lab1
             Console.WriteLine("1. Случайный ввод");
             Console.WriteLine("2. Ручной ввод");
         }
+        static void PrintMsgChoiceCreateStr(string message) // Удалить
+        {
+            Console.WriteLine(message);
+            Console.WriteLine("1. Выбрать строку из массива готовых строк");
+            Console.WriteLine("2. Ввести строку вручную");
+        }
 
+        #region Проверка на пустоту
         static bool isObjEmpty(int[,] obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(int[][] obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(string obj) => obj == null || obj.Length == 0;
         static bool isObjEmpty(char[] obj) => obj == null || obj.Length == 0;
+        #endregion
 
         #region Двумерный массив
         static int[,] CreateRandomMatrix(int rows, int columns)
@@ -383,7 +437,22 @@ namespace lab1
 
         static bool isSign(char checkChar, string signs = ".,!;:?") => signs.Contains(checkChar);
 
-        static bool isSpaceClose(string str) => str.Contains("  "); // FIXME    ИСПРАВИТЬ НА ПРОВЕРКУ ВСЕХ ЗНАКОВ
+        static bool isSpaceClose(string str) => str.Contains("  ");
+
+        static bool isSignClose(string str, string signs = ".,!;:?")
+        {
+            foreach (char c1 in signs)
+            {
+                foreach (char c2 in signs)
+                {
+                    if (str.Contains(String.Concat(c1, c2)))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         static bool isStringValid(string str)
         {
@@ -432,6 +501,11 @@ namespace lab1
                         isStrValid = false;
                         Console.WriteLine("\nВ строке не могут стоять несколько пробелов подряд. Повторите, пожалуйста, ввод.");
                     }
+                    if (isSignClose(str))
+                    {
+                        isStrValid = false;
+                        Console.WriteLine("\nВ строке не могут стоять несколько знаков препинания подряд. Повторите, пожалуйста, ввод.");
+                    }
                 }
                 catch
                 {
@@ -452,146 +526,188 @@ namespace lab1
             int[,] matrix = null;
             int[][] ragArray = null;
             string str = null;
+            int mode = 0;
             #endregion
 
             // Main body
             do
             {
-                PrintMenu();
-                int answer = ParsingIntVars(VarClass.answer, "\nВведите номер действия:");
+                PrintMenu(MsgClass.StartMenu, "\nВыберите объект для обработки:");
+                int answerStart = ParsingIntVars(VarClass.answerStartMenu, "\nВведите номер действия:");
 
-                switch (answer)
+                switch (answerStart)
                 {
-                    #region Двумерный массив
-                    case 1: // формирование двумерного массива
-                        PrintMsgChoiceMode("\nКак вы хотите заполнить массив?");
-                        int mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
-
-                        int rows = ParsingIntVars(VarClass.length, "\nВведите количество строк");
-                        int columns = ParsingIntVars(VarClass.length, "\nВведите количество столбцов");
-
-                        switch (mode)
+                    // Обработка двумерных массивов
+                    case 1:
+                        PrintMenu(MsgClass.MatrixMenu, "\nОбработка двумерных массивов");
+                        int answMatrMenu = ParsingIntVars(VarClass.answerObjectMenu, "\nВведите номер действия:");
+                        switch (answMatrMenu)
                         {
                             case 1:
-                                matrix = CreateRandomMatrix(rows, columns);
+                                PrintMsgChoiceMode("\nКак вы хотите заполнить массив?");
+                                mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
+
+                                int rows = ParsingIntVars(VarClass.length, "\nВведите количество строк");
+                                int columns = ParsingIntVars(VarClass.length, "\nВведите количество столбцов");
+
+                                switch (mode)
+                                {
+                                    case 1:
+                                        matrix = CreateRandomMatrix(rows, columns);
+                                        break;
+                                    case 2:
+                                        matrix = CreateMatrix(rows, columns);
+                                        break;
+                                }
+
+                                Console.WriteLine("\nВаш двумерный массив:");
+                                PrintMatrix(matrix);
                                 break;
+
                             case 2:
-                                matrix = CreateMatrix(rows, columns);
+                                if (isObjEmpty(matrix))
+                                {
+                                    Console.WriteLine("\nМассив пустой");
+                                    break;
+                                }
+
+                                Console.WriteLine("\nВаш двумерный массив:");
+                                PrintMatrix(matrix);
+                                break;
+
+                            case 3:
+                                if (isObjEmpty(matrix))
+                                {
+                                    Console.WriteLine("\nМассив пустой");
+                                    break;
+                                }
+
+                                int position = GetColumnPos(matrix.GetLength(1)) - 1;
+                                matrix = AddColumnMatrix(matrix, position);
+
+                                Console.WriteLine("\nВаш новый двумерный массив:");
+                                PrintMatrix(matrix);
                                 break;
                         }
 
-                        Console.WriteLine("\nВаш двумерный массив:");
-                        PrintMatrix(matrix);
                         break;
 
-                    case 2: // печать двумерного массива
-                        if (isObjEmpty(matrix))
+                    // Обработка рваных массивов
+                    case 2: 
+                        PrintMenu(MsgClass.RagArrMenu, "\nОбработка рваных массивов");
+                        int answRagArrMenu = ParsingIntVars(VarClass.answerObjectMenu, "\nВведите номер действия:");
+
+                        switch (answRagArrMenu)
                         {
-                            Console.WriteLine("Массив пустой");
-                            break;
+                            case 1:
+                                PrintMsgChoiceMode("\nКак вы хотите сформировать рваный массив?");
+                                mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
+
+                                int countString = ParsingIntVars(VarClass.length, "\nВведите количество строк");
+
+                                switch (mode)
+                                {
+                                    case 1:
+                                        ragArray = CreateRandRagArray(countString);
+                                        break;
+                                    case 2:
+                                        ragArray = CreateRagArray(countString);
+                                        break;
+                                }
+
+                                Console.WriteLine("\nВаш рваный массив:");
+                                PrintRagArray(ragArray);
+
+                                break;
+
+                            case 2:
+                                if (isObjEmpty(ragArray))
+                                {
+                                    Console.WriteLine("\nРваный массив пустой");
+                                    break;
+                                }
+
+                                Console.WriteLine("\nВаш рваный массив:");
+                                PrintRagArray(ragArray);
+
+                                break;
+
+                            case 3:
+                                if (isObjEmpty(ragArray))
+                                {
+                                    Console.WriteLine("\nРваный массив пустой");
+                                    break;
+                                }
+
+                                int minLen = FindMinLenStrRagArr(ragArray);
+                                int countMinStr = CountMinStrRagArr(ragArray, minLen);
+
+                                ragArray = DeleteMinStrRagArr(ragArray, countMinStr, minLen);
+
+                                Console.WriteLine("\nУдалены все строки минимальной длины.");
+                                Console.WriteLine("Ваш новый рваный массив:");
+                                PrintRagArray(ragArray);
+
+                                break;
                         }
 
-                        Console.WriteLine("\nВаш двумерный массив:");
-                        PrintMatrix(matrix);
                         break;
 
+                    // Обработка строк
                     case 3:
-                        if (isObjEmpty(matrix))
-                        {
-                            Console.WriteLine("Массив пустой");
-                            break;
-                        }
+                        PrintMenu(MsgClass.StringMenu, "\nОбработка строк");
+                        int answStrMenu = ParsingIntVars(VarClass.answerObjectMenu, "\nВведите номер действия:");
 
-                        int position = GetColumnPos(matrix.GetLength(1)) - 1;
-                        matrix = AddColumnMatrix(matrix, position);
-
-                        Console.WriteLine("\nВаш новый двумерный массив:");
-                        PrintMatrix(matrix);
-                        break;
-                    #endregion
-
-                    #region Рваный массив
-                    case 4: // создание рваного массива
-                        PrintMsgChoiceMode("\nКак вы хотите сформировать рваный массив?");
-                        mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
-
-                        int countString = ParsingIntVars(VarClass.length, "\nВведите количество строк");
-
-                        switch (mode)
+                        switch (answStrMenu)
                         {
                             case 1:
-                                ragArray = CreateRandRagArray(countString);
+                                string[] testArrayString = {
+                                    "В лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                                    "Была лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                                    "В траве сидел кузнечик! Кузнечик: не трогал козявок и дружил с мухом."};
+                                int strNumber = 0;
+
+                                PrintMsgChoiceCreateStr("\nКак вы хотите cформировать строку?");
+                                mode = ParsingIntVars(VarClass.mode, "\nВведите номер режима ввода:");
+
+                                switch (mode)
+                                {
+                                    case 1: // выбор строки из массива
+
+                                        Console.WriteLine("\nВыберите одну из строк");
+                                        PrintArrString(testArrayString);
+                                        strNumber = ParsingIntVars(VarClass.strNumber, "\nВведите номер строки:");
+                                        str = testArrayString[strNumber - 1];
+
+                                        break;
+
+                                    case 2: // ввод строки пользователем
+                                        str = ParsingString("Введите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:?");
+                                        break;
+                                }
+
+                                PrintString(str);
                                 break;
+
                             case 2:
-                                ragArray = CreateRagArray(countString);
+                                PrintString(str);
+                                break;
+
+                            case 3:
+                                if (isObjEmpty(str))
+                                {
+                                    Console.WriteLine("\nСтрока пустая");
+                                    break;
+                                }
+
+                                str = ReverseEvenWordStr(str);
+
+                                PrintString(str, "\nВаша новая строка:");
                                 break;
                         }
-
-                        Console.WriteLine("\nВаш рваный массив:");
-                        PrintRagArray(ragArray);
-
                         break;
 
-                    case 5: // печать рваного массива
-                        if (isObjEmpty(ragArray))
-                        {
-                            Console.WriteLine("\nРваный массив пустой");
-                            break;
-                        }
-
-                        Console.WriteLine("\nВаш рваный массив:");
-                        PrintRagArray(ragArray);
-
-                        break;
-
-                    case 6: // удаление минимальных строк рваного массива
-                        if (isObjEmpty(ragArray))
-                        {
-                            Console.WriteLine("\nРваный массив пустой");
-                            break;
-                        }
-
-                        int minLen = FindMinLenStrRagArr(ragArray);
-                        int countMinStr = CountMinStrRagArr(ragArray, minLen);
-
-                        ragArray = DeleteMinStrRagArr(ragArray, countMinStr, minLen);
-
-                        Console.WriteLine("\nУдалены все строки минимальной длины.");
-                        Console.WriteLine("Ваш новый рваный массив:");
-                        PrintRagArray(ragArray);
-
-                        break;
-                    #endregion
-
-                    #region Строки
-                    case 7: // ввод строки
-                        string[] testArrayString = {
-                        "В лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
-                        "Была лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
-                        "В траве сидел кузнечик! Кузнечик: не трогал козявок и дружил с мухом."};
-
-                        str = ParsingString("Введите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:? ");
-
-                        PrintString(str);
-                        break;
-
-                    case 8: // печать строки
-                        PrintString(str);
-                        break;
-
-                    case 9: // перевернуть каждое чётное слово в строке
-                        if (isObjEmpty(str))
-                        {
-                            Console.WriteLine("\nСтрока пустая");
-                            break;
-                        }
-
-                        str = ReverseEvenWordStr(str);
-
-                        PrintString(str, "\nВаша новая строка:");
-                        break;
-                    #endregion
-
+                    // Завершение работы программы
                     case 0:
                         Console.WriteLine("\nКонец работы программы. До свидания!");
                         isFinishProgram = true;
