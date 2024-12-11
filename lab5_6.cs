@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,7 +91,7 @@ namespace lab1
                             break;
 
                         case VarClass.strNumber:
-                            isParsed = IsInBound(inputNum, 1, 3); // зависит от размера массива тестовых строк
+                            isParsed = IsInBound(inputNum, 1, GetTestArrayString().Length);
                             if (!isParsed)
                             {
                                 Console.WriteLine("Введите число от 1 до 3. Повторите, пожалуйста, ввод.\n");  // зависит от размера массива тестовых строк
@@ -452,7 +453,7 @@ namespace lab1
         {
             if (isObjEmpty(str))
             {
-                Console.WriteLine("\nСтрока пустая");
+                Console.WriteLine("\nВаша строка пустая или была введена некорректно");
             }
             else
             {
@@ -469,12 +470,13 @@ namespace lab1
             for (int wordInd = 1; wordInd < arrayWord.Length; wordInd += 2)
             {
                 char[] wordChars = arrayWord[wordInd].ToCharArray();
-                wordChars = ReverseWord(wordChars);
-
+                
                 if (isObjEmpty(wordChars))
                 {
                     return null;
                 }
+
+                wordChars = ReverseWord(wordChars);
 
                 string reversedWord = new string(wordChars);
                 arrayWord[wordInd] = reversedWord;
@@ -487,11 +489,6 @@ namespace lab1
 
         static char[] ReverseWord(char[] arrChars)
         {
-            if (isObjEmpty(arrChars))
-            {
-                return null;
-            }
-
             Array.Reverse(arrChars);
             char lastChar = arrChars[0];
 
@@ -505,15 +502,17 @@ namespace lab1
 
         static bool isSign(char checkChar, string signs = ".,!;:?") => signs.Contains(checkChar);
 
+        static bool isSignFirst(char checkChar, string signs = " .,!;:?") => signs.Contains(checkChar);
+
         static bool isSpaceClose(string str) => str.Contains("  ");
 
         static bool isSignClose(string str, string signs = ".,!;:?")
         {
-            foreach (char c1 in signs)
+            foreach (char char1 in signs)
             {
-                foreach (char c2 in signs)
+                foreach (char char2 in signs)
                 {
-                    if (str.Contains(String.Concat(c1, c2)))
+                    if (str.Contains(String.Concat(char1, char2)))
                     {
                         return true;
                     }
@@ -522,7 +521,7 @@ namespace lab1
             return false;
         }
 
-        static bool isStringValid(string str)
+        static bool isStrContainBanSigns(string str)
         {
             string alphabet = " QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnmЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁйцукенгшщзхъфывапролджэячсмитьбюё.,!;:?";
             for (int i = 0; i < str.Length; i++)
@@ -533,6 +532,19 @@ namespace lab1
                 }
             }
             return true;
+        }
+
+        static bool isStrContainsLetter(string str)
+        {
+            string alphabet = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnmЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁйцукенгшщзхъфывапролджэячсмитьбюё";
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (alphabet.Contains(str[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         static char[] ShiftArrayLeft(char[] array)
@@ -547,6 +559,66 @@ namespace lab1
             return array;
         }
 
+        static bool isWordContainSign(string str, string signs = ".,!;:?")
+        {
+            string[] words = str.Split(' ');
+            char[] wordArr = null;
+
+            foreach (string word in words)
+            {
+                wordArr = word.ToCharArray();
+                foreach (char sign in signs)
+                {
+                    if (wordArr.Contains(sign))
+                    {
+                        if (Array.IndexOf(wordArr, sign) != wordArr.Length - 1)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        static bool isStringValid(string str)
+        {
+            bool isStrValid = true;
+
+            if (!isStrContainBanSigns(str))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nВ строке есть неподходящие символы. Повторите, пожалуйста, ввод.");
+            }
+            if (isSpaceClose(str))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nВ строке не могут стоять несколько пробелов подряд. Повторите, пожалуйста, ввод.");
+            }
+            if (isSignClose(str))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nВ строке не могут стоять несколько знаков препинания подряд. Повторите, пожалуйста, ввод.");
+            }
+            if (!isStrContainsLetter(str))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nВ вашей строке нет слов. Повторите, пожалуйста, ввод.");
+            }
+            if (isSignFirst(str[0]))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nСтрока не может начинаться со знака препинания или пробела. Повторите, пожалуйста, ввод.");
+            }
+            if (isWordContainSign(str))
+            {
+                isStrValid = false;
+                Console.WriteLine("\nВ словах не могут содержаться знаки препинания. Повторите, пожалуйста, ввод.");
+            }
+
+            return isStrValid;
+        }
+
         static string ParsingString(string msg)
         {
             string str = null;
@@ -559,21 +631,7 @@ namespace lab1
                     str = Console.ReadLine();
 
                     isStrValid = isStringValid(str);
-                    if (!isStrValid)
-                    {
-                        isStrValid = false;
-                        Console.WriteLine("\nВ строке есть неподходящие символы. Повторите, пожалуйста, ввод.");
-                    }
-                    if (isSpaceClose(str))
-                    {
-                        isStrValid = false;
-                        Console.WriteLine("\nВ строке не могут стоять несколько пробелов подряд. Повторите, пожалуйста, ввод.");
-                    }
-                    if (isSignClose(str))
-                    {
-                        isStrValid = false;
-                        Console.WriteLine("\nВ строке не могут стоять несколько знаков препинания подряд. Повторите, пожалуйста, ввод.");
-                    }
+
                 }
                 catch
                 {
@@ -586,7 +644,37 @@ namespace lab1
             return str;
         }
 
+        static string FixString(string str, string signs = ".,!;:?")
+        {
+            str = str.Trim();
+
+            foreach (char sign in signs)
+            {
+                str = str.Replace($" {sign}", sign.ToString());
+            }
+
+            return str;
+        }
         #endregion
+
+        static string[] GetTestArrayString()
+        {
+            string[] testArrayString = {
+                                    "В лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                                    "Была лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
+                                    "В траве сидел кузнечик! Кузнечик: не трогал козявок и дружил с мухом.",
+                                    "В этой строке запятая внут,ри слова.",
+                                    "В этой строке два пробела  подряд.",
+                                    "В этой строке три пробела   подряд.",
+                                    "В этой строке знак препинания стоит ! отдельно.",
+                                    "В этой строке есть неподходящий симв0л.",
+                                    "В этой строке есть (-_-) неподходящие символы.",
+                                    " Эта строка начинается с пробела.",
+                                    ", Эта строка начинается с запятой."
+                                };
+            return testArrayString;
+        }
+
         static void Main(string[] args)
         {
             #region Инициализация переменных
@@ -729,10 +817,7 @@ namespace lab1
                         switch (answStrMenu)
                         {
                             case 1:
-                                string[] testArrayString = {
-                                    "В лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
-                                    "Была лесу родилась елочка. В лесу она росла. Зимой и летом стройная, зеленая была.",
-                                    "В траве сидел кузнечик! Кузнечик: не трогал козявок и дружил с мухом."};
+                                string[] testArrayString = GetTestArrayString();
                                 int strNumber = 0;
 
                                 PrintMsgChoiceCreateStr("\nКак вы хотите cформировать строку?");
@@ -741,11 +826,16 @@ namespace lab1
                                 switch (mode)
                                 {
                                     case 1: // выбор строки из массива
+                                        bool isStrChosen = false;
+                                        do
+                                        {
+                                            Console.WriteLine("\nВыберите одну из строк");
+                                            PrintArrString(testArrayString);
+                                            strNumber = ParsingIntVars(VarClass.strNumber, "\nВведите номер строки:");
+                                            str = testArrayString[strNumber - 1];
 
-                                        Console.WriteLine("\nВыберите одну из строк");
-                                        PrintArrString(testArrayString);
-                                        strNumber = ParsingIntVars(VarClass.strNumber, "\nВведите номер строки:");
-                                        str = testArrayString[strNumber - 1];
+                                            isStrChosen = isStringValid(str);
+                                        } while (!isStrChosen);
 
                                         break;
 
@@ -753,11 +843,17 @@ namespace lab1
                                         str = ParsingString("\nВведите строку, содержащую только латиницу и кириллицу (в двух регистрах), пробелы и знаки .,!;:?");
                                         break;
                                 }
-
+                                str = FixString(str); // корректирование строки
                                 PrintString(str);
                                 break;
 
                             case 2:
+                                if (isObjEmpty(str))
+                                {
+                                    Console.WriteLine("\nСтрока пустая");
+                                    break;
+                                }
+
                                 PrintString(str);
                                 break;
 
