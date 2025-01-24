@@ -14,8 +14,8 @@ namespace lab9
             try
             {
                 DialClock c1 = new DialClock(-3, 1);
-                
-                c1.Show();
+
+                Console.WriteLine(c1);
 
                 Console.WriteLine(c1.Hours);
             }

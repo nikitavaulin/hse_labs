@@ -12,18 +12,20 @@ namespace lab9
         private int hours;
         private int minutes;
 
+        
+
         public int Hours
         {
             get => hours;
             set 
             {
-                if (value < 0)
+                if (0 <= value && value <= 12)
                 {
-                    throw new Exception("Часы не могут быть отрицательным числом");
+                    hours = value;
                 }
                 else
                 {
-                    hours = value;
+                    throw new Exception("Часы должны быть в пределах от 0 до 12./n");
                 }
             }
             
